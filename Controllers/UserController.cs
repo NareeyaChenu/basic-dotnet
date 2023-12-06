@@ -22,7 +22,7 @@ namespace TodoApi.Controllers
             if (!string.IsNullOrEmpty(param.Name))
             {
                 var name = param.Name!.ToLower();
-                users = users.Where(x => x.Name!.ToLower()!.Contains(name)).ToList();
+                users = users.Where(x => x.Name!.ToLower()!.Contains(name, StringComparison.CurrentCultureIgnoreCase)).ToList();
             }
             return Ok(users);
         }
