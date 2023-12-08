@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.DTOs;
+using TodoApi.Interfaces;
 
 namespace TodoApi.Controllers
 {
@@ -8,22 +9,17 @@ namespace TodoApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
-        public UserController(ILogger<UserController> logger)
+        private readonly IUserService _userService;
+        public UserController(ILogger<UserController> logger, IUserService userService)
         {
             _logger = logger;
+            _userService = userService;
         }
 
         [HttpGet]
         public ActionResult GetUser([FromQuery] UserParam param)
         {
-            var users = UserStore.Users;
-
-
-            if (!string.IsNullOrEmpty(param.Name))
-            {
-                var name = param.Name!.ToLower();
-                users = users.Where(x => x.Name!.ToLower()!.Contains(name, StringComparison.CurrentCultureIgnoreCase)).ToList();
-            }
+            var users = _userService.GetUsers(param);
             return Ok(users);
         }
 
@@ -64,7 +60,7 @@ namespace TodoApi.Controllers
         }
 
 
-        [HttpPut]
+        [HttpPost]
         [Route("{id}")]
 
         public ActionResult EditUser([FromBody] UserModel model, [FromRoute] int id)
