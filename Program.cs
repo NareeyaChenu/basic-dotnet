@@ -12,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUserService , UserService>();
+builder.Services.AddScoped<IFileService , FileService>();
 
 var app = builder.Build();
 
