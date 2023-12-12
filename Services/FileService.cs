@@ -48,21 +48,26 @@ namespace TodoApi.Services
         }
         public ActionResult GetFileName(string directoryName)
         {
-            if (!Directory.Exists(directoryName))
+            string[] directories = Directory.GetDirectories(".", "*", SearchOption.TopDirectoryOnly);
+
+            var directory = directories.FirstOrDefault(x => x.Split("/")[1].ToLower() == directoryName.ToLower());
+
+            if (directory == null)
             {
                 return NotFound($"directory with name {directoryName} does not exist");
             }
 
-            List<string> fileNames = GetFileNames(directoryName);
+            var fileNames = GetFileNames(directory);
             return Ok(fileNames);
         }
-        static List<string> GetFileNames(string directoryPath)
+        static List<object> GetFileNames(string directoryPath)
         {
             // Create a list to store file names
-            List<string> fileNames = new List<string>();
+            List<object> fileNames = new List<object>();
 
             // Get a list of file paths in the specified directory
-            string[] files = Directory.GetFiles(directoryPath);
+            string[] files = Directory.
+            GetFiles(directoryPath);
 
             // Extract file names from file paths
             foreach (var filePath in files)
@@ -70,8 +75,13 @@ namespace TodoApi.Services
                 // Use Path.GetFileName to get the file name without the full path
                 string fileName = Path.GetFileName(filePath);
 
+                var result = new
+                {
+                    name = fileName
+                };
+
                 // Add the file name to the list
-                fileNames.Add(fileName);
+                fileNames.Add(result);
             }
 
             return fileNames;

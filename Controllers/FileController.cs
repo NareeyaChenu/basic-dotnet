@@ -14,16 +14,25 @@ namespace TodoApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadImage ([FromForm] FileModel file)
+        public async Task<ActionResult> UploadImage([FromForm] FileModel file)
         {
             Console.WriteLine(file.File!.FileName);
             return await _fileService.UploadFile(file.File);
         }
         [HttpGet]
         [Route("{name}")]
-        public ActionResult GetFiles ([FromRoute] string name)
+        public ActionResult GetFiles([FromRoute] string name)
         {
             return _fileService.GetFileName(name);
         }
+
+        [HttpGet]
+        [Route("html")]
+        public IActionResult Index()
+        {
+            string htmlContent = "<center><h1>This is some HTML content.</h1>/center>";
+            return Content(htmlContent, "text/html");
+        }
+
     }
 }
