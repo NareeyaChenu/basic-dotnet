@@ -14,8 +14,6 @@ namespace TodoApi.Services
         public IEnumerable<UserModel> GetUsers(UserParam param)
         {
             var users = UserStore.Users;
-
-
             if (!string.IsNullOrEmpty(param.Name))
             {
                 var name = param.Name!.ToLower();
