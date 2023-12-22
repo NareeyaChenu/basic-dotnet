@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Mvc;
 using TodoApi.DTOs;
 namespace TodoApi.Interfaces
 {
     public interface IUserService
     {
-        public IEnumerable<UserModel> GetUsers (UserParam param);
+        public ActionResult GetUsers (UserParam param);
+
+        public Task<ActionResult> CreatUser (UserModel model);
     }
 }

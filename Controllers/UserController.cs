@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.DTOs;
 using TodoApi.Interfaces;
@@ -10,6 +13,7 @@ namespace TodoApi.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
+
         public UserController(ILogger<UserController> logger, IUserService userService)
         {
             _logger = logger;
@@ -17,18 +21,25 @@ namespace TodoApi.Controllers
         }
 
         [HttpGet]
+        // [Authorize (Policy = "Admin")]
+        [AllowAnonymous]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public ActionResult GetUser([FromQuery] UserParam param)
         {
-            var users = _userService.GetUsers(param);
-            return Ok(users);
+
+            return _userService.GetUsers(param);
         }
 
 
         [HttpGet]
+        [Authorize (Policy = "Editor")]
         [Route("{id}")]
 
         public ActionResult GetUserById([FromRoute] int id)
         {
+             // Access the raw token from the Authorization header
+            var rawToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            _logger.LogInformation(rawToken);
             var users = UserStore.Users;
 
             var user = users.FirstOrDefault(x => x.Id == id);
@@ -88,28 +99,9 @@ namespace TodoApi.Controllers
             return Ok(users);
         }
         [HttpPost]
-        public ActionResult CreateUser([FromBody] UserModel model)
+        public async Task<ActionResult> CreateUser([FromBody] UserModel model)
         {
-            var users = UserStore.Users;
-
-            var user = users.FirstOrDefault(x => x.Name == model.Name);
-
-            if (user != null)
-            {
-                return Conflict($"user with id  {model.Name} already exist");
-            }
-
-            int id = users.Max(x => x.Id);
-            _logger.LogInformation($"max id is {id}");
-
-            UserModel newUser = new UserModel
-            {
-                Name = model.Name,
-                Id = id + 1
-
-            };
-            users.Add(newUser);
-            return Ok(users);
+            return await _userService.CreatUser(model);
         }
 
 
